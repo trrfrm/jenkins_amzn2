@@ -70,7 +70,7 @@ resource "aws_security_group" "App_SG" {
         from_port        = local.app_port
         to_port          = local.app_port
         protocol         = local.protocol
-        cidr_blocks      = [var.network_details.cidr_block]
+        cidr_blocks      = [local.any_where] #var.network_details.cidr_block
     }
     egress {
         from_port        = local.all_ports

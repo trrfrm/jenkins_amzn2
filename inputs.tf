@@ -19,8 +19,3 @@ variable "network_details" {
         cidr_block  = "10.0.0.0/16"
     }
 }
-
-# variable "hammer" {
-#     type    = string
-#     default = "0.1"
-# }

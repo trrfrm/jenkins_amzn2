@@ -15,30 +15,41 @@ resource "aws_instance" "WebServer" {
   tags                          = {
       Name                      = local.webserver_tags[count.index]
   }
+  connection {
+    user        = local.username
+    private_key = file(local.key_path)
+    host        = self.public_ip
+  }
+  provisioner "file" {
+    source      = local.jenkins_source
+    destination = local.jenkins_destination
+  }
+  provisioner "remote-exec" {
+    inline      = [
+      "sudo setfacl -R -m u:$USER:rwx jenkins.sh",
+      "sh ~/jenkins.sh"
+    ]
+  }
   depends_on    = [ aws_vpc.vnet, aws_subnet.pub_subnets]
-
-
 }
 
-resource "null_resource" "webProvisioner" {
-  count    = local.count
-  triggers = {
+resource "null_resource" "WebProvisioner" {
+  count          = local.count
+  triggers       = {
     exec_trigger = local.hammer
   }
-      
-  provisioner "remote-exec" {
   connection {
     type        = local.connection_type
     user        = local.username
     private_key = file(local.key_path)
     host        = aws_instance.WebServer.*.public_ip[count.index]
   }
-  inline        = [
-    "sudo amazon-linux-extras install nginx1 -y",
-    "sudo systemctl start nginx.service",
-    "sudo systemctl enable nginx.service",
-    "sudo yum install tree -y"
+  provisioner "remote-exec" {
+    inline      = [
+      "sudo yum update -y",
+      "java -version",
+      "terraform --version"
     ]
   }
+  depends_on    = [ aws_instance.WebServer ]
 }
-

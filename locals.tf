@@ -18,5 +18,7 @@ locals {
     env_prefix           = "from-tf"
     connection_type      = "ssh"
     username             = "ec2-user"
+    jenkins_source       = "jenkins.sh"
+    jenkins_destination  = "/home/ec2-user/jenkins.sh"
     hammer               = "0.1"
 }
