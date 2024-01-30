@@ -27,7 +27,8 @@ resource "aws_instance" "WebServer" {
   provisioner "remote-exec" {
     inline      = [
       "sudo setfacl -R -m u:$USER:rwx jenkins.sh",
-      "sh ~/jenkins.sh"
+      "sh ~/jenkins.sh",
+      "sudo cat /var/lib/jenkins/secrets/initialAdminPassword"
     ]
   }
   depends_on    = [ aws_vpc.vnet, aws_subnet.pub_subnets]
@@ -48,6 +49,7 @@ resource "null_resource" "WebProvisioner" {
     inline      = [
       "sudo yum update -y",
       "java -version",
+      "mvn --version",
       "terraform --version"
     ]
   }
