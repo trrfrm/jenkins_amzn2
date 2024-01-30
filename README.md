@@ -1,6 +1,6 @@
 ## module: _mod_vpc_
 
-### Creates a basic virtual private cloud in AWS using a terraform module along with 2 Jenkins {_Master-Agent_} Nodes with `latest-amazon-linux-image`
+### Creates a basic virtual private cloud in AWS using a terraform module along with 2 Jenkins {_Master-Agent_} Nodes on `Amazon Linux 2`
 ---------------------------------------------------------------------------------------------------------------------------
 
 * This Terraform module deploys a Virtual Private Cloud in AWS with 2 subnets or a set of subnets passed in as input parameters
