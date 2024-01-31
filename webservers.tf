@@ -16,23 +16,22 @@ resource "aws_instance" "WebServer" {
       Name                      = local.webserver_tags[count.index]
   }
   connection {
-    type        = local.connection_type
-    user        = local.username
-    private_key = file(local.key_path)
-    host        = self.public_ip
+    type         = local.connection_type
+    user         = local.username
+    private_key  = file(local.key_path)
+    host         = self.public_ip
   }
   provisioner "file" {
-    source      = local.jenkins_source
-    destination = local.jenkins_destination
+    source       = local.jenkins_source
+    destination  = local.jenkins_destination
   }
   provisioner "remote-exec" {
-    inline      = [
+    inline       = [
       "sudo setfacl -R -m u:$USER:rwx jenkins.sh",
-      "sh ~/jenkins.sh",
-      "sudo cat /var/lib/jenkins/secrets/initialAdminPassword"
+      "sh ~/jenkins.sh"
     ]
   }
-  depends_on    = [ aws_vpc.vnet, aws_subnet.pub_subnets]
+  depends_on     = [ aws_vpc.vnet, aws_subnet.subnets]
 }
 
 resource "null_resource" "WebProvisioner" {
@@ -41,17 +40,18 @@ resource "null_resource" "WebProvisioner" {
     exec_trigger = local.hammer
   }
   connection {
-    type        = local.connection_type
-    user        = local.username
-    private_key = file(local.key_path)
-    host        = aws_instance.WebServer.*.public_ip[count.index]
+    type         = local.connection_type
+    user         = local.username
+    private_key  = file(local.key_path)
+    host         = aws_instance.WebServer.*.public_ip[count.index]
   }
   provisioner "remote-exec" {
-    inline      = [
+    inline       = [
       "sudo yum update -y",
       "java -version",
-      "terraform --version"
+      "terraform --version",
+      "sudo cat /var/lib/jenkins/secrets/initialAdminPassword"
     ]
   }
-  depends_on    = [ aws_instance.WebServer ]
+  depends_on     = [ aws_instance.WebServer ]
 }

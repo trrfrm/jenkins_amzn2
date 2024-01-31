@@ -1,7 +1,3 @@
-provider "aws" {
-    region = var.default_region.region
-}
-
 resource "aws_vpc" "vnet" {
     cidr_block          = var.network_details.cidr_block
     tags                = {
@@ -39,8 +35,8 @@ resource "aws_security_group" "Web-SG" {
         cidr_blocks      = [local.any_where]
     }
     ingress {
-        from_port        = local.http_port
-        to_port          = local.http_port
+        from_port        = local.app_port
+        to_port          = local.app_port
         protocol         = local.protocol
         cidr_blocks      = [local.any_where]
     }

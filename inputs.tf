@@ -15,7 +15,7 @@ variable "network_details" {
         cidr_block  = string
     })
     default         = {
-        name        = "tf-vnet"
+        name        = "tf-vpc"
         cidr_block  = "10.0.0.0/16"
     }
 }

@@ -9,7 +9,7 @@ locals {
     any_protocol         = "-1"
     any_where            = "0.0.0.0/0"
     any_where_ipv6       = "::/0"
-    key_name             = "Legion"
+    key_name             = "deployment"
     key_path             = "~/.ssh/id_rsa"
     instance_type        = "t3.micro"
     public_ip_enabled    = "true"
