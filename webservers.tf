@@ -37,7 +37,7 @@ resource "aws_instance" "WebServer" {
 resource "null_resource" "WebProvisioner" {
   count          = local.count
   triggers       = {
-    exec_trigger = local.hammer
+    timestamp    = timestamp()
   }
   connection {
     type         = local.connection_type
