@@ -14,6 +14,7 @@ locals {
     instance_type        = "t3.micro"
     public_ip_enabled    = "true"
     default_desc         = "Created from Terraform"
+    web_subnets          = [ "Web1", "Web2" ]
     webserver_tags       = [ "Jenkins-Master", "Jenkins-Agent" ]
     env_prefix           = "from-tf"
     connection_type      = "ssh"

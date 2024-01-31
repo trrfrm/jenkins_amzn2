@@ -9,13 +9,13 @@ resource "aws_vpc" "vnet" {
     }
 }
 
-resource "aws_subnet" "pub_subnets" {
-    count                = local.count
+resource "aws_subnet" "subnets" {
+    count                = length(var.subnet_tags)
     vpc_id               = aws_vpc.vnet.id
     cidr_block           = cidrsubnet(var.network_details.cidr_block, 8, count.index)
     availability_zone    = format("${var.default_region.region}%s", count.index%2==0?"a":"b")
     tags                 = {
-        Name             = "${local.env_prefix}-subnet"
+        Name             = var.subnet_tags[count.index]
     }
     depends_on           = [ aws_vpc.vnet ]
 }
@@ -25,7 +25,7 @@ resource "aws_internet_gateway" "igateway" {
     tags                 = {
         Name             = "IGW"
     }
-    depends_on           = [ aws_vpc.vnet, aws_subnet.pub_subnets ]
+    depends_on           = [ aws_vpc.vnet, aws_subnet.subnets ]
 }
 
 resource "aws_security_group" "Web-SG" {
@@ -70,7 +70,7 @@ resource "aws_security_group" "App_SG" {
         from_port        = local.app_port
         to_port          = local.app_port
         protocol         = local.protocol
-        cidr_blocks      = [local.any_where] #var.network_details.cidr_block
+        cidr_blocks      = [var.network_details.cidr_block]
     }
     egress {
         from_port        = local.all_ports
@@ -106,10 +106,9 @@ resource "aws_route_table" "private_rt" {
 }
 
 resource "aws_route_table_association" "a" {
-    count               = local.count
-    subnet_id           = aws_subnet.pub_subnets[count.index].id
-    route_table_id      = count.index<2 ? aws_route_table.public_rt.id: aws_route_table.private_rt.id
-                         #contains(var.public_routes, lookup(aws_subnet.pub_subnets[count.index].tags_all, "Name", "")) ? aws_route_table.public_rt.id: aws_route_table.private_rt.id
-
-    depends_on          = [ aws_route_table.public_rt, aws_route_table.private_rt ]
+    count                = local.count
+    subnet_id            = aws_subnet.subnets[count.index].id
+    route_table_id       = contains(local.web_subnets, lookup(aws_subnet.subnets[count.index].tags_all, "Name", "")) ? aws_route_table.public_rt.id: aws_route_table.private_rt.id
+                            #count.index<2 ? aws_route_table.public_rt.id: aws_route_table.private_rt.id
+    depends_on           = [ aws_route_table.public_rt, aws_route_table.private_rt ]
 }

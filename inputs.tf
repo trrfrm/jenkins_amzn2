@@ -19,3 +19,8 @@ variable "network_details" {
         cidr_block  = "10.0.0.0/16"
     }
 }
+
+variable "subnet_tags" {
+    type =  list(string)
+    default = [ "Web1", "Web2", "App1", "App2" ]
+}
